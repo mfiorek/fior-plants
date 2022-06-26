@@ -27,10 +27,12 @@ function HomePage() {
         <Loader />
       ) : (
         <div className='flex grow flex-col items-center justify-center gap-4'>
-          <p style={{fontSize: '20rem'}}>🪴</p>
+          <p className='text-9xl'>🪴</p>
           <p className='text-4xl text-slate-300'>Hi {userData?.name} 👋</p>
-          <p className='text-4xl text-slate-300'>There is nothing here just yet...</p>
-          <p className='text-4xl text-slate-300'>...but will be coming soon!</p>
+          <div className='flex flex-col items-center justify-center'>
+            <p className='text-2xl text-slate-300'>There is nothing here just yet...</p>
+            <p className='text-2xl text-slate-300'>...but will be coming soon!</p>
+          </div>
         </div>
       )}
     </div>
