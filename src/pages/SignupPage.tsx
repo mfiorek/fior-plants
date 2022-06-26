@@ -8,6 +8,8 @@ import ErrorAlert from '../components/ErrorAlert';
 function SignupPage() {
   const navigate = useNavigate();
 
+  const [name, setName] = useState('');
+  const [nameError, setNameError] = useState('');
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
@@ -17,9 +19,10 @@ function SignupPage() {
   const [generalError, setGeneralError] = useState('');
   const [loading, setLoaing] = useState(false);
 
-  const handleSignup = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    setNameError('');
     setEmailError('');
     setPasswordError('');
     setConfirmPasswordError('');
@@ -32,6 +35,9 @@ function SignupPage() {
       }, 5000);
     };
 
+    if (!name) {
+      timeoutError(setNameError, 'Please provide a name...');
+    }
     if (!email) {
       timeoutError(setEmailError, 'Please provide Email');
     }
@@ -41,19 +47,16 @@ function SignupPage() {
     if (password !== confirmPassword) {
       timeoutError(setConfirmPasswordError, 'Passwords do not match');
     }
-    if (email && password && confirmPassword === password) {
+    if (name && email && password && confirmPassword === password) {
       setLoaing(true);
-      AuthAPI.signup(email, password)
-        .then((userCredential) => {
-          return setDoc(doc(database, `users/${userCredential.user?.uid}`), { email: email });
-        })
-        .then(() => {
-          navigate('/');
-        })
-        .catch((err) => {
-          timeoutError(setGeneralError, err.message);
-          setLoaing(false);
-        });
+      try {
+        const userCredential = await AuthAPI.signup(email, password);
+        setDoc(doc(database, `users/${userCredential.user?.uid}`), { name: name, email: email });
+        navigate('/');
+      } catch (err: any) {
+        timeoutError(setGeneralError, err.message || 'Whoops... something went wrong.');
+        setLoaing(false);
+      }
     }
   };
 
@@ -62,8 +65,10 @@ function SignupPage() {
       {(generalError || emailError || passwordError) && (
         <div className='fixed top-2 m-2 flex w-full max-w-sm flex-col gap-2'>
           {generalError && <ErrorAlert text={generalError} />}
+          {nameError && <ErrorAlert text={nameError} />}
           {emailError && <ErrorAlert text={emailError} />}
           {passwordError && <ErrorAlert text={passwordError} />}
+          {confirmPasswordError && <ErrorAlert text={confirmPasswordError} />}
         </div>
       )}
       <div className='flex flex-col items-center gap-8 lg:flex-row'>
@@ -81,6 +86,12 @@ function SignupPage() {
         </div>
         <div className='flex w-full max-w-sm flex-shrink-0 flex-col gap-2 overflow-hidden rounded-2xl bg-slate-800 p-8 shadow-2xl'>
           <form onSubmit={handleSignup}>
+            <div className='form-control'>
+              <label className='label'>
+                <span className='label-text'>Name</span>
+              </label>
+              <input type='text' placeholder='PlantMaster' className='input input-bordered' onChange={(event) => setName(event.target.value)} />
+            </div>
             <div className='form-control'>
               <label className='label'>
                 <span className='label-text'>Email</span>
