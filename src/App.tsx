@@ -1,8 +1,17 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+
 function App() {
   return (
-    <div className='h-screen flex justify-center items-center bg-teal-900'>
-      <p className='text-6xl text-slate-300'>fior-plants 🌱</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/login' element={<LoginPage />} />
+        <Route path='/signup' element={<SignupPage />} />
+        <Route path='/' element={<HomePage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
