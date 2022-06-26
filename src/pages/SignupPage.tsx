@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { doc, setDoc } from 'firebase/firestore';
 import { database } from '../firebase';
+import { withAuthCheck } from '../components/withAuthCheck';
 import AuthAPI from '../api/AuthAPI';
 import ErrorAlert from '../components/ErrorAlert';
 
@@ -128,4 +129,4 @@ function SignupPage() {
   );
 }
 
-export default SignupPage;
+export default withAuthCheck(SignupPage, false);

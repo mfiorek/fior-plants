@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { withAuthCheck } from '../components/withAuthCheck';
 import AuthAPI from '../api/AuthAPI';
 import ErrorAlert from '../components/ErrorAlert';
 
@@ -100,4 +101,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default withAuthCheck(LoginPage, false);
