@@ -48,7 +48,7 @@ function LoginPage() {
   };
 
   return (
-    <div className='flex h-screen flex-col items-center justify-center bg-teal-900'>
+    <div className='flex min-h-screen flex-col items-center justify-center bg-teal-900'>
       {(generalError || emailError || passwordError) && (
         <div className='fixed top-2 m-2 flex w-full max-w-sm flex-col gap-2'>
           {generalError && <ErrorAlert text={generalError} />}
