@@ -43,13 +43,6 @@ function PlantsPage() {
     return plantsUnsubscribe;
   }, []);
 
-  const incrementWateringInterval = useCallback(
-    (plantId: string, value: number) => {
-      updateDoc(doc(database, `users/${currentUser?.uid}/plants/${plantId}`), { wateringInterval: increment(value) });
-    },
-    [currentUser],
-  );
-
   const calculateNextWatering = useCallback((plant: Plant) => {
     if (!plant.lastWateringDate) return;
     const previousWatering = new Date(plant.lastWateringDate.toDate());
@@ -111,20 +104,6 @@ function PlantsPage() {
               <div className='stat'>
                 <div className='stat-title'>Name</div>
                 <div className='stat-value'>{plant.name}</div>
-              </div>
-              <div className='stat place-items-end'>
-                <div className='stat-title'>Should be watered every</div>
-                <div className='stat-value flex items-end gap-4'>
-                  {plant.wateringInterval} {plant.wateringInterval > 1 ? 'days' : 'day'}
-                  <div className='btn-group'>
-                    <button className='btn btn-sm text-xl font-black' onClick={() => incrementWateringInterval(plant.id, -1)}>
-                      -
-                    </button>
-                    <button className='btn btn-sm text-xl font-black' onClick={() => incrementWateringInterval(plant.id, 1)}>
-                      +
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
             <div className='stats stat flex items-center justify-center rounded-none p-0 text-primary-content'>
