@@ -84,9 +84,11 @@ function PlantsPage() {
   );
 
   const overdueWatteringClass = (plant: Plant) => {
-    const days = differenceInDays(new Date(), calculateNextWatering(plant));
-    if (days == null) return '';
-    return days < 1 ? 'border-2 border-red-600' : '';
+    const daysToWatering = differenceInDays(new Date(), calculateNextWatering(plant));
+    const daysFromLastWatering = differenceInDays(new Date(), plant.lastWateringDate?.toDate());
+    if (daysToWatering == 0) return 'border-2 border-red-600';
+    if (daysFromLastWatering === 0) return 'border-2 border-lime-500';
+    return '';
   };
 
   if (isLoading) return <Loader />;
