@@ -37,7 +37,7 @@ function HomePage() {
         plantsArray.push({ id: plant.id, ...plant.data() } as Plant);
       });
 
-      plantsArray.sort((plantA, plantB) => (parseInt(plantA.lastWateringDate?.valueOf()) || 0) - (parseInt(plantB.lastWateringDate?.valueOf()) || 0));
+      plantsArray.sort((plantA, plantB) => ((calculateNextWatering(plantA)?.valueOf() || 0) - (calculateNextWatering(plantB)?.valueOf() || 0)));
       setPlants(plantsArray);
       setIsPlantsLoading(false);
     });
@@ -60,23 +60,27 @@ function HomePage() {
   }, []);
 
   const differenceInDays = useCallback((date1: Date | undefined, date2: Date | undefined) => {
-    if (!date1 || !date2) return 0;
-    const diffTime = Math.abs(date1.valueOf() - date2.valueOf());
+    if (!date1 || !date2) return undefined;
+    const diffTime = date2.valueOf() - date1.valueOf();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }, []);
 
   const lastWateringText = useCallback((plant: Plant) => {
     const days = differenceInDays(new Date(), plant.lastWateringDate?.toDate());
-    if (days === 0) return '-';
+    if (days == null) return '-';
+    if (days === 0) return 'Today!';
     if (days === 1) return `${days} day ago`;
-    return `${days} days ago`;
+    return `${Math.abs(days)} days ago`;
   }, []);
 
   const nextWateringText = useCallback((plant: Plant) => {
     const days = differenceInDays(new Date(), calculateNextWatering(plant));
-    if (days === 0) return '-';
-    if (days === 1) return `${days} day ago`;
-    return `${days} days ago`;
+    if (days == null) return '-';
+    if (days < 0) return `${Math.abs(days)} days ago`;
+    if (days === -1) return `${Math.abs(days)} day ago`;
+    if (days === 0) return 'Today!';
+    if (days === 1) return `In ${days} day`;
+    return `In ${days} days`;
   }, []);
 
   const waterNow = useCallback(
@@ -86,6 +90,12 @@ function HomePage() {
     },
     [currentUser],
   );
+
+  const overdueWatteringClass = (plant: Plant) => {
+    const days = differenceInDays(new Date(), calculateNextWatering(plant))
+    if (days == null) return '';
+    return days < 1 ? 'border-2 border-red-600' : '';
+  }
 
   return (
     <div className='flex min-h-screen flex-col bg-teal-800'>
@@ -101,7 +111,7 @@ function HomePage() {
           </button>
           <div className='flex flex-col gap-8 p-8'>
             {plants?.map((plant) => (
-              <div className='stats stats-vertical w-full shadow' key={plant.id}>
+              <div className={`stats stats-vertical w-full shadow ${overdueWatteringClass(plant)}`} key={plant.id}>
                 <div className='stats text-primary-content'>
                   <div className='stat'>
                     <div className='stat-title'>Name</div>
