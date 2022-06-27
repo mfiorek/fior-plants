@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useModal } from '../contexts/ModalContext';
 import NavBar from '../components/NavBar';
 import Loader from '../components/Loader';
-import AddNewPlantModal from '../components/AddNewPlantModal'
+import AddNewPlantModal from '../components/AddNewPlantModal';
 import Plant from '../types/Plant';
 
 function HomePage() {
@@ -59,6 +59,26 @@ function HomePage() {
     return nextWatering;
   }, []);
 
+  const differenceInDays = useCallback((date1: Date | undefined, date2: Date | undefined) => {
+    if (!date1 || !date2) return 0;
+    const diffTime = Math.abs(date1.valueOf() - date2.valueOf());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }, []);
+
+  const lastWateringText = useCallback((plant: Plant) => {
+    const days = differenceInDays(new Date(), plant.lastWateringDate?.toDate());
+    if (days === 0) return '-';
+    if (days === 1) return `${days} day ago`;
+    return `${days} days ago`;
+  }, []);
+
+  const nextWateringText = useCallback((plant: Plant) => {
+    const days = differenceInDays(new Date(), calculateNextWatering(plant));
+    if (days === 0) return '-';
+    if (days === 1) return `${days} day ago`;
+    return `${days} days ago`;
+  }, []);
+
   const waterNow = useCallback(
     (plantId: string) => {
       updateDoc(doc(database, `users/${currentUser?.uid}/plants/${plantId}`), { lastWateringDate: serverTimestamp() });
@@ -105,11 +125,17 @@ function HomePage() {
                 <div className='stats stat flex items-center justify-center rounded-none p-0 text-primary-content'>
                   <div className='stat place-items-center'>
                     <div className='stat-title'>Last wattering:</div>
-                    <div className='stat-value'>{plant.lastWateringDate?.toDate().toLocaleDateString() || '-'}</div>
+                    <div className='flex flex-col items-center gap-2'>
+                      <div className='stat-value'>{lastWateringText(plant)}</div>
+                      <div className='stat-desc'>{plant.lastWateringDate?.toDate().toLocaleDateString()}</div>
+                    </div>
                   </div>
                   <div className='stat place-items-center'>
                     <div className='stat-title'>Next wattering:</div>
-                    <div className='stat-value'>{calculateNextWatering(plant)?.toLocaleDateString() || '-'}</div>
+                    <div className='flex flex-col items-center gap-2'>
+                      <div className='stat-value'>{nextWateringText(plant)}</div>
+                      <div className='stat-desc'>{calculateNextWatering(plant)?.toLocaleDateString()}</div>
+                    </div>
                   </div>
                 </div>
                 <div className='stat'>
