@@ -77,9 +77,9 @@ function PlantDetailsPage() {
 
   if (isLoading) return <Loader />;
   return (
-    <div className='flex grow flex-col items-center gap-12 p-12'>
-      <div className='w-full min-w-min lg:w-2/3'>
-        <div className='stats stats-vertical w-full shadow'>
+    <div className='flex grow flex-col items-center gap-12 p-4 md:p-12'>
+      <div className='w-full lg:w-2/3'>
+        <div className='stats stats-vertical w-full shadow flex flex-col'>
           <div className='stat'>
             <div className='stat-title'>Name</div>
             <input
@@ -90,10 +90,12 @@ function PlantDetailsPage() {
               onChange={(event) => setName(event.target.value)}
             />
           </div>
-          <div className='stat'>
+          <div className='stat items-stretch'>
             <div className='stat-title'>Should be watered every</div>
-            <div className='stat-value flex items-end justify-between gap-4'>
-              {wateringInterval} {wateringInterval! > 1 ? 'days' : 'day'}
+            <div className='stat-value flex flex-wrap items-end justify-between gap-4'>
+              <div>
+                {wateringInterval} {wateringInterval! > 1 ? 'days' : 'day'}
+              </div>
               <div className='btn-group'>
                 <button className='btn btn-error btn-square text-xl font-black' onClick={() => incrementWateringInterval(-1)}>
                   <svg className='w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'>
@@ -111,8 +113,8 @@ function PlantDetailsPage() {
         </div>
       </div>
 
-      <div className='w-full min-w-min lg:w-2/3'>
-        <div className='flex w-full justify-between py-4'>
+      <div className='w-full lg:w-2/3'>
+        <div className='flex w-full flex-wrap justify-between gap-2 py-4'>
           <h3 className='text-3xl font-bold'>All waterings:</h3>
           <button onClick={() => openModal(<AddNewWateringModal plantId={plantId!} />)} className='btn btn-success btn-wide'>
             Add new watering 💧

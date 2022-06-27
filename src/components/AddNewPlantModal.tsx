@@ -18,7 +18,7 @@ const AddNewPlantModal = () => {
         <label className='label'>
           <span className='label-text'>Plant name</span>
         </label>
-        <input type='text' placeholder='Plantie' className='input input-bordered' onChange={(event) => setPlantName(event.target.value)} />
+        <input type='text' placeholder='Plantie?' className='bg-transparent text-4xl font-black focus-visible:outline-none' onChange={(event) => setPlantName(event.target.value)} />
       </div>
     </Modal>
   );

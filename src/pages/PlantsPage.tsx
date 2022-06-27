@@ -92,7 +92,7 @@ function PlantsPage() {
   if (isLoading) return <Loader />;
   return (
     <div className='flex grow flex-col items-center gap-4'>
-      <p className='pt-8 text-9xl'>🪴</p>
+      <p className='pt-8 text-9xl select-none'>🪴</p>
       <p className='text-4xl text-slate-300'>Hi {userData?.name} 👋</p>
       <button onClick={() => openModal(<AddNewPlantModal />)} className='btn btn-info btn-wide'>
         Add new plant 🌱
