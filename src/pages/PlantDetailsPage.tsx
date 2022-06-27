@@ -1,4 +1,4 @@
-import { collection, deleteDoc, doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, deleteField, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -45,6 +45,9 @@ function PlantDetailsPage() {
         wateringsArray.push({ id: watering.id, ...watering.data() } as PlantWatering);
       });
       wateringsArray.sort((wateringA, wateringB) => (wateringB.wateringDate.toDate().valueOf() || 0) - (wateringA.wateringDate.toDate().valueOf() || 0));
+      
+      updateDoc(doc(database, `users/${currentUser?.uid}/plants/${plantId}`), { lastWateringDate: (wateringsArray[0]?.wateringDate || deleteField()) });
+
       setWaterings(wateringsArray);
       setIsWateringsLoading(false);
     });
