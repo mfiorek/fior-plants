@@ -53,7 +53,11 @@ function PlantsPage() {
 
   const differenceInDays = useCallback((date1: Date | undefined, date2: Date | undefined) => {
     if (!date1 || !date2) return undefined;
-    const diffTime = date2.valueOf() - date1.valueOf();
+    
+    const date1Midnight = new Date(date1.toDateString());
+    const date2Midnight = new Date(date2.toDateString());
+
+    const diffTime = Math.abs(date2Midnight.valueOf() - date1Midnight.valueOf());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }, []);
 
