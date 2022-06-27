@@ -51,33 +51,27 @@ function PlantsPage() {
     return nextWatering;
   }, []);
 
-  const differenceInDays = useCallback((date1: Date | undefined, date2: Date | undefined) => {
-    if (!date1 || !date2) return undefined;
-    
-    const date1Midnight = new Date(date1.toDateString());
-    const date2Midnight = new Date(date2.toDateString());
+  const getDifferenceInDays = useCallback((date1: Date | undefined) => {
+    if (!date1) return undefined;
 
-    const diffTime = Math.abs(date2Midnight.valueOf() - date1Midnight.valueOf());
+    const date1Midnight = new Date(date1.toDateString());
+    const diffTime = date1Midnight.valueOf() - new Date().valueOf();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }, []);
 
-  const lastWateringText = useCallback((plant: Plant) => {
-    const days = differenceInDays(new Date(), plant.lastWateringDate?.toDate());
-    if (days == null) return '-';
-    if (days === 0) return 'Today!';
-    if (days === 1) return `${days} day ago`;
-    return `${Math.abs(days)} days ago`;
-  }, []);
-
-  const nextWateringText = useCallback((plant: Plant) => {
-    const days = differenceInDays(new Date(), calculateNextWatering(plant));
-    if (days == null) return '-';
-    if (days < 0) return `${Math.abs(days)} days ago`;
-    if (days === -1) return `${Math.abs(days)} day ago`;
-    if (days === 0) return 'Today!';
-    if (days === 1) return `In ${days} day`;
-    return `In ${days} days`;
-  }, []);
+  const getDifferenceInDaysText = (date: Date | undefined) => {
+    const differenceInDays = getDifferenceInDays(date);
+    if (differenceInDays == null) return '-';
+    if (differenceInDays === 0) return 'Today!';
+    if (differenceInDays < 0) {
+      if (differenceInDays === -1) return `${Math.abs(differenceInDays)} day ago`;
+      return `${Math.abs(differenceInDays)} days ago`;
+    }
+    if (differenceInDays > 0) {
+      if (differenceInDays === 1) return `In ${differenceInDays} day`;
+      return `In ${differenceInDays} days`;
+    }
+  };
 
   const waterNow = useCallback(
     (plantId: string) => {
@@ -88,9 +82,9 @@ function PlantsPage() {
   );
 
   const overdueWatteringClass = (plant: Plant) => {
-    const daysToWatering = differenceInDays(new Date(), calculateNextWatering(plant));
-    const daysFromLastWatering = differenceInDays(new Date(), plant.lastWateringDate?.toDate());
-    if (daysToWatering == 0) return 'border-2 border-red-600';
+    const daysToWatering = getDifferenceInDays(calculateNextWatering(plant));
+    const daysFromLastWatering = getDifferenceInDays(plant.lastWateringDate?.toDate());
+    if (daysToWatering != null && daysToWatering <= 0) return 'border-2 border-red-600';
     if (daysFromLastWatering === 0) return 'border-2 border-lime-500';
     return '';
   };
@@ -98,7 +92,7 @@ function PlantsPage() {
   if (isLoading) return <Loader />;
   return (
     <div className='flex grow flex-col items-center gap-4'>
-      <p className='pt-8 text-9xl select-none'>🪴</p>
+      <p className='select-none pt-8 text-9xl'>🪴</p>
       <p className='text-4xl text-slate-300'>Hi {userData?.name} 👋</p>
       <button onClick={() => openModal(<AddNewPlantModal />)} className='btn btn-info btn-wide'>
         Add new plant 🌱
@@ -116,14 +110,14 @@ function PlantsPage() {
               <div className='stat place-items-center'>
                 <div className='stat-title'>Last wattering:</div>
                 <div className='flex flex-col items-center gap-2'>
-                  <div className='stat-value'>{lastWateringText(plant)}</div>
+                  <div className='stat-value'>{getDifferenceInDaysText(plant.lastWateringDate?.toDate())}</div>
                   <div className='stat-desc'>{plant.lastWateringDate?.toDate().toLocaleDateString()}</div>
                 </div>
               </div>
               <div className='stat place-items-center'>
                 <div className='stat-title'>Next wattering:</div>
                 <div className='flex flex-col items-center gap-2'>
-                  <div className='stat-value'>{nextWateringText(plant)}</div>
+                  <div className='stat-value'>{getDifferenceInDaysText(calculateNextWatering(plant))}</div>
                   <div className='stat-desc'>{calculateNextWatering(plant)?.toLocaleDateString()}</div>
                 </div>
               </div>
