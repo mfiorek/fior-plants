@@ -1,6 +1,6 @@
 import { collection, deleteDoc, deleteField, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useModal } from '../contexts/ModalContext';
 import { database } from '../firebase';
@@ -8,6 +8,7 @@ import PlantWatering from '../types/PlantWaterings';
 import useDebounce from '../hooks/useDebounce';
 import Loader from '../components/Loader';
 import AddNewWateringModal from '../components/AddNewWateringModal';
+import Modal from '../components/Modal';
 
 function PlantDetailsPage() {
   const navigate = useNavigate();
@@ -45,8 +46,8 @@ function PlantDetailsPage() {
         wateringsArray.push({ id: watering.id, ...watering.data() } as PlantWatering);
       });
       wateringsArray.sort((wateringA, wateringB) => (wateringB.wateringDate.toDate().valueOf() || 0) - (wateringA.wateringDate.toDate().valueOf() || 0));
-      
-      updateDoc(doc(database, `users/${currentUser?.uid}/plants/${plantId}`), { lastWateringDate: (wateringsArray[0]?.wateringDate || deleteField()) });
+
+      updateDoc(doc(database, `users/${currentUser?.uid}/plants/${plantId}`), { lastWateringDate: wateringsArray[0]?.wateringDate || deleteField() });
 
       setWaterings(wateringsArray);
       setIsWateringsLoading(false);
@@ -78,11 +79,24 @@ function PlantDetailsPage() {
     }
   };
 
+  const deletePlant = () => {
+    const deleteAction = () => {
+      deleteDoc(doc(database, `users/${currentUser?.uid}/plants/${plantId}`));
+      navigate('/');
+    };
+
+    openModal(
+      <Modal labelRed='Yes...' labelGreen='No!' handleRed={deleteAction} title='Delete plant 🥀'>
+        <p className='py-8 text-4xl font-black'>Do you really want to delete {name}?</p>
+      </Modal>,
+    );
+  };
+
   if (isLoading) return <Loader />;
   return (
     <div className='flex grow flex-col items-center gap-12 p-4 md:p-12'>
       <div className='w-full lg:w-2/3'>
-        <div className='stats stats-vertical w-full shadow flex flex-col'>
+        <div className='stats stats-vertical flex w-full flex-col shadow'>
           <div className='stat'>
             <div className='stat-title'>Name</div>
             <input
@@ -143,6 +157,12 @@ function PlantDetailsPage() {
               <div className='stat-value'>No watterings yet...</div>
             </div>
           )}
+        </div>
+
+        <div className='flex justify-end py-12'>
+          <button className='btn btn-error' onClick={deletePlant}>
+            Delete plant 🥀
+          </button>
         </div>
       </div>
     </div>
