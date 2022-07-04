@@ -9,6 +9,7 @@ import useDebounce from '../hooks/useDebounce';
 import Loader from '../components/Loader';
 import AddNewWateringModal from '../components/AddNewWateringModal';
 import Modal from '../components/Modal';
+import ImageUploader from '../components/ImageUploader';
 
 function PlantDetailsPage() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ function PlantDetailsPage() {
   const [wateringInterval, setWateringInterval] = useState<number | undefined>(undefined);
   const debouncedWateringInterval = useDebounce(wateringInterval, 500);
   const [waterings, setWaterings] = useState<PlantWatering[]>([]);
+  const [imgSrc, setImgSrc] = useState<string>('');
 
   // Subscribe to plant data
   useEffect(() => {
@@ -34,6 +36,7 @@ function PlantDetailsPage() {
       setName(plantData.data()?.name);
       setWateringInterval(plantData.data()?.wateringInterval);
       setIsPlantsLoading(false);
+      setImgSrc(plantData.data()?.imgSrc);
     });
     return plantUnsubscribe;
   }, []);
@@ -95,8 +98,14 @@ function PlantDetailsPage() {
   if (isLoading) return <Loader />;
   return (
     <div className='flex grow flex-col items-center gap-12 p-4 md:p-12'>
+      <ImageUploader text={imgSrc ? 'Change image...' : 'Add Image!'} plantId={plantId!} />
       <div className='w-full lg:w-2/3'>
         <div className='stats stats-vertical flex w-full flex-col shadow'>
+          {imgSrc && (
+            <div className='flex justify-center'>
+              <img className='h-96 w-full object-cover' src={imgSrc} />
+            </div>
+          )}
           <div className='stat'>
             <div className='stat-title'>Name</div>
             <input

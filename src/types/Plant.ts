@@ -7,4 +7,5 @@ export default interface Plant {
   wateringInterval: number;
   lastWateringDate: Timestamp;
   waterings: PlantWaterings[];
+  imgSrc?: string;
 }

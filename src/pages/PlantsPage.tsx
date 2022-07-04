@@ -99,15 +99,22 @@ function PlantsPage() {
       </button>
       <div className='flex flex-col gap-8 p-8'>
         {plants?.map((plant) => (
-          <div className={`stats stats-vertical w-full shadow ${overdueWatteringClass(plant)}`} key={plant.id}>
-            <div className='stats text-primary-content'>
+          <div className={`flex w-full flex-col rounded-2xl bg-slate-800 shadow ${overdueWatteringClass(plant)}`} key={plant.id}>
+            {plant.imgSrc && (
+              <div className='flex border-b border-slate-600 justify-center'>
+                <img className='h-96 w-full max-w-lg object-cover' src={plant.imgSrc} />
+              </div>
+            )}
+
+            <div className='text-primary-content border-b border-slate-600 '>
               <div className='stat'>
                 <div className='stat-title'>Name</div>
                 <div className='stat-value'>{plant.name}</div>
               </div>
             </div>
-            <div className='stats stat flex items-center justify-center rounded-none p-0 text-primary-content'>
-              <div className='stat place-items-center'>
+
+            <div className='flex items-center border-b border-slate-600  justify-center rounded-none p-0 text-primary-content'>
+              <div className='stat place-items-center border-r border-slate-600'>
                 <div className='stat-title'>Last wattering:</div>
                 <div className='flex flex-col items-center gap-2'>
                   <div className='stat-value'>{getDifferenceInDaysText(plant.lastWateringDate?.toDate())}</div>
@@ -122,6 +129,7 @@ function PlantsPage() {
                 </div>
               </div>
             </div>
+
             <div className='stat flex'>
               <Link to={`/plant/${plant.id}`} className='btn btn-outline btn-warning'>
                 Edit ⚙
