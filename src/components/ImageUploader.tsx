@@ -36,7 +36,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ text, plantId }) => {
 
   return (
     <>
-      <input type='file' id='file' className='hidden' onChange={handleFileInput} />
+      <input id='file' type='file' capture="environment" accept="image/*" className='hidden' onChange={handleFileInput} />
       <label htmlFor='file'>
         <a className='btn btn-success cursor-pointer'>{text}</a>
       </label>
