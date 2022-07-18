@@ -52,7 +52,7 @@ function PlantsPage() {
       <button onClick={() => openModal(<AddNewPlantModal />)} className='btn btn-info btn-wide'>
         Add new plant 🌱
       </button>
-      <div className='flex flex-col gap-8 p-8'>
+      <div className='flex flex-col gap-8 p-8 w-full lg:w-4/6'>
         {plants?.map((plant) => (
           <PlantCard plant={plant} />
         ))}
