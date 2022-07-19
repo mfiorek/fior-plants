@@ -54,7 +54,7 @@ function PlantsPage() {
       </button>
       <div className='flex flex-col gap-8 p-8 w-full lg:w-4/6'>
         {plants?.map((plant) => (
-          <PlantCard plant={plant} />
+          <PlantCard key={plant.id} plant={plant} />
         ))}
       </div>
     </div>

@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { database, storage } from '../firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { deleteField, doc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
+import Plant from '../types/Plant';
 
 type ImageUploaderProps = {
-  text: string;
-  plantId: string;
+  plant: Plant;
 };
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ text, plantId }) => {
+const ImageUploader: React.FC<ImageUploaderProps> = ({ plant }) => {
   const { currentUser } = useAuth();
   const [progress, setProgress] = useState<number | null>(null);
-  const storageRef = ref(storage, `${currentUser?.uid}/${plantId}`);
+  const storageRef = ref(storage, `${currentUser?.uid}/${plant.id}`);
+
+  const isCaptureSupported = document.createElement('input').capture != undefined;
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target?.files?.length) return;
@@ -29,13 +31,19 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ text, plantId }) => {
       () => {
         getDownloadURL(uploadTask.snapshot.ref)
           .then((downloadURL) => {
-            updateDoc(doc(database, `users/${currentUser?.uid}/plants/${plantId}`), { imgSrc: downloadURL });
+            updateDoc(doc(database, `users/${currentUser?.uid}/plants/${plant.id}`), { imgSrc: downloadURL });
           })
           .finally(() => {
             setProgress(null);
           });
       },
     );
+  };
+
+  const deleteImage = () => {
+    deleteObject(storageRef).then(() => {
+      updateDoc(doc(database, `users/${currentUser?.uid}/plants/${plant.id}`), { imgSrc: deleteField() });
+    });
   };
 
   if (progress != null) {
@@ -50,12 +58,29 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ text, plantId }) => {
   }
 
   return (
-    <>
-      <input id='file' type='file' capture='environment' accept='image/*' className='hidden' onChange={handleFileInput} />
-      <label htmlFor='file'>
-        <a className='btn btn-success cursor-pointer'>{text}</a>
-      </label>
-    </>
+    <div className='flex flex-wrap justify-between'>
+      <div className='btn-group'>
+        {isCaptureSupported && (
+          <>
+            <input id='file' type='file' capture='environment' accept='image/*' className='hidden' onChange={handleFileInput} />
+            <label htmlFor='file' className='btn btn-accent cursor-pointer'>
+              <a>{plant.imgSrc ? '📷 Capture new image' : '📷 Capture image!'}</a>
+            </label>
+          </>
+        )}
+
+        <input id='file' type='file' accept='image/*' className='hidden' onChange={handleFileInput} />
+        <label htmlFor='file' className='btn btn-accent cursor-pointer'>
+          <a>{plant.imgSrc ? '🖼 Select new image' : '🖼 Select image!'}</a>
+        </label>
+      </div>
+
+      {plant.imgSrc && (
+        <button className='btn btn-error' onClick={deleteImage}>
+          Delete image ♻
+        </button>
+      )}
+    </div>
   );
 };
 

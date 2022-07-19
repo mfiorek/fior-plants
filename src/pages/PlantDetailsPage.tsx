@@ -71,7 +71,7 @@ function PlantDetailsPage() {
   return (
     <div className='flex justify-center'>
       <div className='flex w-full flex-col gap-8 p-8 lg:w-4/6'>
-        <ImageUploader text={plant?.imgSrc ? 'Change image...' : 'Add Image!'} plantId={plantId!} />
+        <ImageUploader plant={plant!} />
         <PlantEditCard plant={plant!} />
 
         <div className='flex w-full flex-wrap justify-between gap-2 py-4'>
