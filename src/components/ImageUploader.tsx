@@ -80,7 +80,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ plant }) => {
           </>
         )}
 
-        <input id='file' type='file' accept='image/*' className='hidden' onChange={handleFileInput} />
+        <input id='file' type='file' className='hidden' onChange={handleFileInput} />
         <label htmlFor='file' className='btn btn-accent cursor-pointer'>
           <a>{plant.imgSrc ? '🖼 Select new image' : '🖼 Select image!'}</a>
         </label>
