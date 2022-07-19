@@ -73,8 +73,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ plant }) => {
       <div className='btn-group'>
         {isCaptureSupported && (
           <>
-            <input id='file' type='file' capture='environment' accept='image/*' className='hidden' onChange={handleFileInput} />
-            <label htmlFor='file' className='btn btn-accent cursor-pointer'>
+            <input id='capture' type='file' capture='environment' accept='image/*' className='hidden' onChange={handleFileInput} />
+            <label htmlFor='capture' className='btn btn-accent cursor-pointer'>
               <a>{plant.imgSrc ? '📷 Capture new image' : '📷 Capture image!'}</a>
             </label>
           </>
