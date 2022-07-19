@@ -3,7 +3,9 @@ import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebas
 import { database, storage } from '../firebase';
 import { deleteField, doc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
+import { useModal } from '../contexts/ModalContext';
 import Plant from '../types/Plant';
+import Modal from './Modal';
 
 type ImageUploaderProps = {
   plant: Plant;
@@ -11,6 +13,7 @@ type ImageUploaderProps = {
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({ plant }) => {
   const { currentUser } = useAuth();
+  const { openModal } = useModal();
   const [progress, setProgress] = useState<number | null>(null);
   const storageRef = ref(storage, `${currentUser?.uid}/${plant.id}`);
 
@@ -41,9 +44,17 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ plant }) => {
   };
 
   const deleteImage = () => {
-    deleteObject(storageRef).then(() => {
-      updateDoc(doc(database, `users/${currentUser?.uid}/plants/${plant.id}`), { imgSrc: deleteField() });
-    });
+    const deleteAction = () => {
+      deleteObject(storageRef).then(() => {
+        updateDoc(doc(database, `users/${currentUser?.uid}/plants/${plant.id}`), { imgSrc: deleteField() });
+      });
+    };
+
+    openModal(
+      <Modal labelRed='Yes...' labelGreen='No!' handleRed={deleteAction} title='Delete this image?'>
+        <p className='py-8 text-4xl font-black'>Do you really want to delete {plant?.name} image?</p>
+      </Modal>,
+    );
   };
 
   if (progress != null) {
