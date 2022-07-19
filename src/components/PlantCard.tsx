@@ -45,7 +45,7 @@ const PlantCard: React.FC<PlantCardProps> = ({ plant }) => {
           </div>
         </div>
 
-        <div className='flex items-center justify-center rounded-none border-b border-slate-600 p-0 text-primary-content'>
+        <div className='flex items-center justify-center rounded-none border-b border-slate-600 text-primary-content'>
           <div className='flex grow flex-col place-items-center border-r border-slate-600 p-4'>
             <div className='opacity-60'>Last wattering:</div>
             <div className='flex flex-col items-center gap-2'>
