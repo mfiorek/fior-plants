@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useModal } from '../contexts/ModalContext';
 import Plant from '../types/Plant';
 import Modal from './Modal';
+import { resizeImage } from '../utils/imageResizer';
 
 type ImageUploaderProps = {
   plant: Plant;
@@ -19,9 +20,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ plant }) => {
 
   const isCaptureSupported = document.createElement('input').capture != undefined;
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target?.files?.length) return;
-    const uploadTask = uploadBytesResumable(storageRef, e.target.files[0]);
+
+    const resizedFile = (await resizeImage({ file: e.target.files[0]!, maxSize: 500, quality: 0.8 })) as Blob;
+
+    const uploadTask = uploadBytesResumable(storageRef, resizedFile);
     uploadTask.on(
       'state_changed',
       (snapshot) => {
